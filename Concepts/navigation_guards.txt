@@ -1,0 +1,100 @@
+Understanding Navigation Guards in Web Applications
+What are Navigation Guards?
+Navigation guards are functions in frameworks like Vue.js that control or restrict access to certain routes in a web application. They allow developers to manage the behavior of route navigation by performing actions such as:
+
+Authenticating users before granting access to specific pages.
+
+Checking permissions to ensure users have the correct role or access rights.
+
+Redirecting users to an appropriate page if a condition is not met.
+
+Why are Navigation Guards Needed?
+In modern single-page applications (SPAs), routing plays a crucial role in navigating between different sections of the app without refreshing the page. Without proper controls, anyone could potentially access sensitive parts of your application by simply changing the URL. Navigation guards are essential for:
+
+Security: Ensuring unauthorized users cannot access restricted routes.
+
+User Experience: Redirecting users to appropriate pages based on context (e.g., login if not authenticated).
+
+Validation: Preventing invalid operations such as accessing an unfinished form.
+
+Where are Navigation Guards Used?
+Authentication and Authorization:
+
+Example: Preventing non-logged-in users from accessing the "Profile" page.
+
+Data Validation:
+
+Example: Ensuring a required query parameter is present before displaying a page.
+
+Redirect Logic:
+
+Example: Redirecting users to a "Setup" page if their profile is incomplete.
+
+A Simple Real-Life Story Example
+Scenario: An Online Library
+Imagine an online library app, Readly, that offers the following:
+
+Public Access: Anyone can browse the "Home" and "Books" pages.
+
+Logged-In Access: Only logged-in users can access the "My Account" page.
+
+Admin Access: Only admins can access the "Admin Dashboard."
+
+The Problem
+Kavin, a user, tries to access the "Admin Dashboard" by typing the URL manually:
+
+plaintext
+Copy
+Edit
+https://readly.com/admin
+Kavin is a regular user, not an admin. If the app doesn't have navigation guards, he might see a page he isn’t authorized to view. This creates a security loophole.
+
+How Navigation Guards Solve This
+Step 1: Define Guard Logic
+Using Vue.js as an example, a beforeEnter guard can be added to the "Admin Dashboard" route:
+
+javascript
+Copy
+Edit
+const routes = [
+  {
+    path: '/admin',
+    component: AdminDashboard,
+    beforeEnter: (to, from, next) => {
+      const userRole = getUserRole(); // Fetch user role from session or state
+      if (userRole !== 'admin') {
+        next('/home'); // Redirect to the home page if not an admin
+      } else {
+        next(); // Allow access if the user is an admin
+      }
+    },
+  },
+];
+Step 2: Authentication Guard
+A global guard ensures users are logged in before accessing protected routes:
+
+javascript
+Copy
+Edit
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = isLoggedIn(); // Check if the user is logged in
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login'); // Redirect to the login page
+  } else {
+    next(); // Allow navigation
+  }
+});
+Result
+When Kavin tries to access the "Admin Dashboard," the navigation guard checks his role and redirects him to the home page if he isn’t an admin. Similarly, unauthenticated users attempting to access the "My Account" page are redirected to the login page.
+
+Benefits of Navigation Guards
+Improved Security: Prevent unauthorized access to sensitive areas of the app.
+
+Enhanced UX: Provide clear navigation paths for users, directing them to relevant pages.
+
+Centralized Logic: Simplify route management by handling access control in a single place.
+
+Conclusion
+Navigation guards act as gatekeepers in web applications, ensuring users only access routes they are allowed to see. They are especially critical in SPAs to prevent unauthorized access and guide users to appropriate sections of the app. By using navigation guards effectively, you can enhance the security, functionality, and user experience of your web application.
+
+Through the example of Readly, we’ve shown how navigation guards can prevent scenarios like unauthorized access to admin pages. Implement them thoughtfully to build secure and user-friendly applications!
